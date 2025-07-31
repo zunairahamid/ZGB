@@ -10,32 +10,49 @@ namespace ZGB
     public partial class Form1 : Form
     {
         private readonly IDriver _driver;
-        public DataGridView dataGridView;
+        private DataTable _productsTable;
+        
 
         public Form1()
         {
             InitializeComponent();
-            // Initialize Neo4j driver (update URI and credentials)
+
+            // Initialize Neo4j driver (update with your credentials)
             _driver = GraphDatabase.Driver(
                 "bolt://localhost:7687",
                 AuthTokens.Basic("neo4j", "yourpassword"));
+
+            // Set up DataTable and DataGridView
+            InitializeDataTable();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void InitializeDataTable()
         {
-            ProductData(); // Load data when form loads
+            _productsTable = new DataTable();
+            _productsTable.Columns.Add("ProductID", typeof(int));
+            _productsTable.Columns.Add("ProductName", typeof(string));
+            _productsTable.Columns.Add("ProductCategory", typeof(string));
+            _productsTable.Columns.Add("ProductCompany", typeof(string));
+            _productsTable.Columns.Add("ProductPrice", typeof(decimal));
+            _productsTable.Columns.Add("ProductQuantity", typeof(int));
+
+            dataGridView1.DataSource = _productsTable;
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
-            base.OnFormClosing(e);
-            _driver?.Dispose(); // Clean up driver when form closes
+            await LoadProductsAsync();
         }
 
-        private async void ProductData()
+        private async Task LoadProductsAsync()
         {
             try
             {
+                Cursor = Cursors.WaitCursor;
+                _productsTable.Rows.Clear();
+
                 using (var session = _driver.AsyncSession())
                 {
                     var result = await session.ExecuteReadAsync(async tx =>
@@ -50,17 +67,9 @@ namespace ZGB
                         return await cursor.ToListAsync();
                     });
 
-                    var dt = new DataTable();
-                    dt.Columns.Add("ProductID", typeof(int));
-                    dt.Columns.Add("ProductName", typeof(string));
-                    dt.Columns.Add("ProductCategory", typeof(string));
-                    dt.Columns.Add("ProductCompany", typeof(string));
-                    dt.Columns.Add("ProductPrice", typeof(decimal));
-                    dt.Columns.Add("ProductQuantity", typeof(int));
-
                     foreach (var record in result)
                     {
-                        dt.Rows.Add(
+                        _productsTable.Rows.Add(
                             record["ProductID"].As<int>(),
                             record["ProductName"].As<string>(),
                             record["ProductCategory"].As<string>(),
@@ -68,20 +77,17 @@ namespace ZGB
                             record["ProductPrice"].As<decimal>(),
                             record["ProductQuantity"].As<int>());
                     }
-
-                    if (dataGridView != null && !dataGridView.IsDisposed)
-                    {
-                        dataGridView.Invoke((MethodInvoker)delegate {
-                            dataGridView.DataSource = dt;
-                            dataGridView.Refresh();
-                        });
-                    }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading products: {ex.Message}",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+                dataGridView1.Refresh();
             }
         }
 
@@ -91,6 +97,7 @@ namespace ZGB
 
             try
             {
+                Cursor = Cursors.WaitCursor;
                 var parameters = new Dictionary<string, object>
                 {
                     { "id", int.Parse(tbxID.Text) },
@@ -103,24 +110,34 @@ namespace ZGB
 
                 using (var session = _driver.AsyncSession())
                 {
-                    await session.ExecuteWriteAsync(async tx =>
+                    var result = await session.ExecuteWriteAsync(async tx =>
                     {
-                        await tx.RunAsync(
+                        var cursor = await tx.RunAsync(
                             "CREATE (p:Product {id: $id, name: $name, category: $category, " +
-                            "company: $company, price: $price, quantity: $quantity})",
+                            "company: $company, price: $price, quantity: $quantity}) " +
+                            "RETURN p.id AS id",
                             parameters);
-                    });
-                }
 
-                MessageBox.Show("Product inserted successfully!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await Task.Run(() => ProductData());
-                ClearForm();
+                        return await cursor.SingleAsync();
+                    });
+
+                    if (result["id"].As<int>() > 0)
+                    {
+                        MessageBox.Show("Product inserted successfully!", "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        await LoadProductsAsync();
+                        ClearForm();
+                    }
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error inserting product: {ex.Message}",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
         }
 
@@ -130,6 +147,7 @@ namespace ZGB
 
             try
             {
+                Cursor = Cursors.WaitCursor;
                 var parameters = new Dictionary<string, object>
                 {
                     { "id", int.Parse(tbxID.Text) },
@@ -160,16 +178,20 @@ namespace ZGB
                             "Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-                }
 
-                MessageBox.Show("Product updated successfully!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await Task.Run(() => ProductData());
+                    MessageBox.Show("Product updated successfully!", "Success",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await LoadProductsAsync();
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error updating product: {ex.Message}",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
         }
 
@@ -190,6 +212,7 @@ namespace ZGB
 
             try
             {
+                Cursor = Cursors.WaitCursor;
                 var parameters = new Dictionary<string, object>
                 {
                     { "id", int.Parse(tbxID.Text) }
@@ -214,17 +237,21 @@ namespace ZGB
                             "Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-                }
 
-                MessageBox.Show("Product deleted successfully!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await Task.Run(() => ProductData());
-                ClearForm();
+                    MessageBox.Show("Product deleted successfully!", "Success",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await LoadProductsAsync();
+                    ClearForm();
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error deleting product: {ex.Message}",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
         }
 
@@ -273,9 +300,9 @@ namespace ZGB
 
         private void dataGridView_SelectionChanged(object sender, EventArgs e)
         {
-            if (dataGridView.SelectedRows.Count > 0)
+            if (dataGridView1.SelectedRows.Count > 0)
             {
-                DataGridViewRow row = dataGridView.SelectedRows[0];
+                DataGridViewRow row = dataGridView1.SelectedRows[0];
                 tbxID.Text = row.Cells["ProductID"].Value.ToString();
                 tbxName.Text = row.Cells["ProductName"].Value.ToString();
                 tbxCategory.Text = row.Cells["ProductCategory"].Value.ToString();
@@ -283,6 +310,17 @@ namespace ZGB
                 tbxPrice.Text = row.Cells["ProductPrice"].Value.ToString();
                 tbxQuantity.Text = row.Cells["ProductQuantity"].Value.ToString();
             }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            _driver?.Dispose();
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }
