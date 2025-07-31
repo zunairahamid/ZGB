@@ -1,0 +1,1 @@
+This is a windows form application built using .NET Framework and C# language which stores products and their details such as ID, Name, Category, Company, Price and uses language such as SQLServer and neo4j.
