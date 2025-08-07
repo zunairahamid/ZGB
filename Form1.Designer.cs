@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.lblProduct = new System.Windows.Forms.Label();
             this.lblID = new System.Windows.Forms.Label();
             this.lblProductName = new System.Windows.Forms.Label();
@@ -46,254 +45,251 @@
             this.btnUpdate = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.productIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.productNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.productCategoryDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.productCompanyDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.productPriceDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.productQuantityDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.productsBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.marketdbDataSet = new ZGB.marketdbDataSet();
-            this.productsTableAdapter = new ZGB.marketdbDataSetTableAdapters.ProductsTableAdapter();
-            this.marketdbDataSet1 = new ZGB.marketdbDataSet();
-            this.productsTableAdapter1 = new ZGB.marketdbDataSetTableAdapters.ProductsTableAdapter();
-            this.tableAdapterManager1 = new ZGB.marketdbDataSetTableAdapters.TableAdapterManager();
-            this.marketdbDataSet2 = new ZGB.marketdbDataSet();
+            this.grpViewDatabase = new System.Windows.Forms.GroupBox();
+            this.rdbViewAllDB = new System.Windows.Forms.RadioButton();
+            this.rdbViewProductDB = new System.Windows.Forms.RadioButton();
+            this.rdbViewMarketDB = new System.Windows.Forms.RadioButton();
+            this.rdbViewDefaultDB = new System.Windows.Forms.RadioButton();
+            this.grpOperationDatabase = new System.Windows.Forms.GroupBox();
+            this.lblCurrentOperationDB = new System.Windows.Forms.Label();
+            this.rdbOperationProductDB = new System.Windows.Forms.RadioButton();
+            this.rdbOperationMarketDB = new System.Windows.Forms.RadioButton();
+            this.rdbOperationDefaultDB = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.productsBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.marketdbDataSet)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.marketdbDataSet1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.marketdbDataSet2)).BeginInit();
+            this.grpViewDatabase.SuspendLayout();
+            this.grpOperationDatabase.SuspendLayout();
             this.SuspendLayout();
-            // 
+
             // lblProduct
-            // 
             this.lblProduct.AutoSize = true;
-            this.lblProduct.Location = new System.Drawing.Point(350, 9);
+            this.lblProduct.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold);
+            this.lblProduct.Location = new System.Drawing.Point(350, 20);
             this.lblProduct.Name = "lblProduct";
-            this.lblProduct.Size = new System.Drawing.Size(44, 13);
+            this.lblProduct.Size = new System.Drawing.Size(270, 24);
             this.lblProduct.TabIndex = 0;
-            this.lblProduct.Text = "Product";
-            // 
+            this.lblProduct.Text = "Neo4j Product Manager";
+
             // lblID
-            // 
             this.lblID.AutoSize = true;
-            this.lblID.Location = new System.Drawing.Point(118, 47);
+            this.lblID.Location = new System.Drawing.Point(50, 70);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(58, 13);
             this.lblID.TabIndex = 1;
             this.lblID.Text = "Product ID";
-            // 
+
             // lblProductName
-            // 
             this.lblProductName.AutoSize = true;
-            this.lblProductName.Location = new System.Drawing.Point(118, 82);
+            this.lblProductName.Location = new System.Drawing.Point(50, 110);
             this.lblProductName.Name = "lblProductName";
             this.lblProductName.Size = new System.Drawing.Size(75, 13);
             this.lblProductName.TabIndex = 2;
             this.lblProductName.Text = "Product Name";
-            // 
+
             // lblCategory
-            // 
             this.lblCategory.AutoSize = true;
-            this.lblCategory.Location = new System.Drawing.Point(115, 116);
+            this.lblCategory.Location = new System.Drawing.Point(50, 150);
             this.lblCategory.Name = "lblCategory";
             this.lblCategory.Size = new System.Drawing.Size(89, 13);
             this.lblCategory.TabIndex = 3;
             this.lblCategory.Text = "Product Category";
-            // 
+
             // lblCompany
-            // 
             this.lblCompany.AutoSize = true;
-            this.lblCompany.Location = new System.Drawing.Point(115, 159);
+            this.lblCompany.Location = new System.Drawing.Point(50, 190);
             this.lblCompany.Name = "lblCompany";
             this.lblCompany.Size = new System.Drawing.Size(91, 13);
             this.lblCompany.TabIndex = 4;
             this.lblCompany.Text = "Product Company";
-            // 
+
             // lblPrice
-            // 
             this.lblPrice.AutoSize = true;
-            this.lblPrice.Location = new System.Drawing.Point(115, 203);
+            this.lblPrice.Location = new System.Drawing.Point(50, 230);
             this.lblPrice.Name = "lblPrice";
             this.lblPrice.Size = new System.Drawing.Size(71, 13);
             this.lblPrice.TabIndex = 5;
             this.lblPrice.Text = "Product Price";
-            // 
+
             // lblQuantity
-            // 
             this.lblQuantity.AutoSize = true;
-            this.lblQuantity.Location = new System.Drawing.Point(115, 253);
+            this.lblQuantity.Location = new System.Drawing.Point(50, 270);
             this.lblQuantity.Name = "lblQuantity";
             this.lblQuantity.Size = new System.Drawing.Size(86, 13);
             this.lblQuantity.TabIndex = 6;
             this.lblQuantity.Text = "Product Quantity";
-            // 
+
             // tbxID
-            // 
-            this.tbxID.Location = new System.Drawing.Point(353, 40);
+            this.tbxID.Location = new System.Drawing.Point(200, 70);
             this.tbxID.Name = "tbxID";
-            this.tbxID.Size = new System.Drawing.Size(196, 20);
+            this.tbxID.Size = new System.Drawing.Size(200, 20);
             this.tbxID.TabIndex = 7;
-            // 
+
             // tbxName
-            // 
-            this.tbxName.Location = new System.Drawing.Point(353, 82);
+            this.tbxName.Location = new System.Drawing.Point(200, 110);
             this.tbxName.Name = "tbxName";
-            this.tbxName.Size = new System.Drawing.Size(196, 20);
+            this.tbxName.Size = new System.Drawing.Size(200, 20);
             this.tbxName.TabIndex = 8;
-            // 
+
             // tbxCategory
-            // 
-            this.tbxCategory.Location = new System.Drawing.Point(353, 124);
+            this.tbxCategory.Location = new System.Drawing.Point(200, 150);
             this.tbxCategory.Name = "tbxCategory";
-            this.tbxCategory.Size = new System.Drawing.Size(196, 20);
+            this.tbxCategory.Size = new System.Drawing.Size(200, 20);
             this.tbxCategory.TabIndex = 9;
-            // 
+
             // tbxCompany
-            // 
-            this.tbxCompany.Location = new System.Drawing.Point(353, 159);
+            this.tbxCompany.Location = new System.Drawing.Point(200, 190);
             this.tbxCompany.Name = "tbxCompany";
-            this.tbxCompany.Size = new System.Drawing.Size(196, 20);
+            this.tbxCompany.Size = new System.Drawing.Size(200, 20);
             this.tbxCompany.TabIndex = 10;
-            // 
+
             // tbxPrice
-            // 
-            this.tbxPrice.Location = new System.Drawing.Point(353, 207);
+            this.tbxPrice.Location = new System.Drawing.Point(200, 230);
             this.tbxPrice.Name = "tbxPrice";
-            this.tbxPrice.Size = new System.Drawing.Size(196, 20);
+            this.tbxPrice.Size = new System.Drawing.Size(200, 20);
             this.tbxPrice.TabIndex = 11;
-            // 
+
             // tbxQuantity
-            // 
-            this.tbxQuantity.Location = new System.Drawing.Point(353, 253);
+            this.tbxQuantity.Location = new System.Drawing.Point(200, 270);
             this.tbxQuantity.Name = "tbxQuantity";
-            this.tbxQuantity.Size = new System.Drawing.Size(196, 20);
+            this.tbxQuantity.Size = new System.Drawing.Size(200, 20);
             this.tbxQuantity.TabIndex = 12;
-            // 
+
             // btnInsert
-            // 
-            this.btnInsert.Location = new System.Drawing.Point(621, 116);
+            this.btnInsert.Location = new System.Drawing.Point(450, 70);
             this.btnInsert.Name = "btnInsert";
-            this.btnInsert.Size = new System.Drawing.Size(154, 35);
+            this.btnInsert.Size = new System.Drawing.Size(120, 35);
             this.btnInsert.TabIndex = 13;
             this.btnInsert.Text = "Insert";
             this.btnInsert.UseVisualStyleBackColor = true;
-            this.btnInsert.Click += new System.EventHandler(this.btnInsert_Click_1);
-            // 
+
             // btnUpdate
-            // 
-            this.btnUpdate.Location = new System.Drawing.Point(621, 203);
+            this.btnUpdate.Location = new System.Drawing.Point(450, 120);
             this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(154, 35);
+            this.btnUpdate.Size = new System.Drawing.Size(120, 35);
             this.btnUpdate.TabIndex = 14;
             this.btnUpdate.Text = "Update";
             this.btnUpdate.UseVisualStyleBackColor = true;
-            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
-            // 
+
             // btnDelete
-            // 
-            this.btnDelete.Location = new System.Drawing.Point(621, 282);
+            this.btnDelete.Location = new System.Drawing.Point(450, 170);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(154, 35);
+            this.btnDelete.Size = new System.Drawing.Size(120, 35);
             this.btnDelete.TabIndex = 15;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click_1);
-            // 
+
             // dataGridView1
-            // 
-            this.dataGridView1.AutoGenerateColumns = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.productIDDataGridViewTextBoxColumn,
-            this.productNameDataGridViewTextBoxColumn,
-            this.productCategoryDataGridViewTextBoxColumn,
-            this.productCompanyDataGridViewTextBoxColumn,
-            this.productPriceDataGridViewTextBoxColumn,
-            this.productQuantityDataGridViewTextBoxColumn});
-            this.dataGridView1.DataSource = this.productsBindingSource;
-            this.dataGridView1.Location = new System.Drawing.Point(79, 370);
+            this.dataGridView1.Location = new System.Drawing.Point(50, 350);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(709, 150);
+            this.dataGridView1.Size = new System.Drawing.Size(900, 250);
             this.dataGridView1.TabIndex = 16;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
-            // 
-            // productIDDataGridViewTextBoxColumn
-            // 
-            this.productIDDataGridViewTextBoxColumn.DataPropertyName = "ProductID";
-            this.productIDDataGridViewTextBoxColumn.HeaderText = "ProductID";
-            this.productIDDataGridViewTextBoxColumn.Name = "productIDDataGridViewTextBoxColumn";
-            // 
-            // productNameDataGridViewTextBoxColumn
-            // 
-            this.productNameDataGridViewTextBoxColumn.DataPropertyName = "ProductName";
-            this.productNameDataGridViewTextBoxColumn.HeaderText = "ProductName";
-            this.productNameDataGridViewTextBoxColumn.Name = "productNameDataGridViewTextBoxColumn";
-            // 
-            // productCategoryDataGridViewTextBoxColumn
-            // 
-            this.productCategoryDataGridViewTextBoxColumn.DataPropertyName = "ProductCategory";
-            this.productCategoryDataGridViewTextBoxColumn.HeaderText = "ProductCategory";
-            this.productCategoryDataGridViewTextBoxColumn.Name = "productCategoryDataGridViewTextBoxColumn";
-            // 
-            // productCompanyDataGridViewTextBoxColumn
-            // 
-            this.productCompanyDataGridViewTextBoxColumn.DataPropertyName = "ProductCompany";
-            this.productCompanyDataGridViewTextBoxColumn.HeaderText = "ProductCompany";
-            this.productCompanyDataGridViewTextBoxColumn.Name = "productCompanyDataGridViewTextBoxColumn";
-            // 
-            // productPriceDataGridViewTextBoxColumn
-            // 
-            this.productPriceDataGridViewTextBoxColumn.DataPropertyName = "ProductPrice";
-            this.productPriceDataGridViewTextBoxColumn.HeaderText = "ProductPrice";
-            this.productPriceDataGridViewTextBoxColumn.Name = "productPriceDataGridViewTextBoxColumn";
-            // 
-            // productQuantityDataGridViewTextBoxColumn
-            // 
-            this.productQuantityDataGridViewTextBoxColumn.DataPropertyName = "ProductQuantity";
-            this.productQuantityDataGridViewTextBoxColumn.HeaderText = "ProductQuantity";
-            this.productQuantityDataGridViewTextBoxColumn.Name = "productQuantityDataGridViewTextBoxColumn";
-            // 
-            // productsBindingSource
-            // 
-            this.productsBindingSource.DataMember = "Products";
-            this.productsBindingSource.DataSource = this.marketdbDataSet;
-            // 
-            // marketdbDataSet
-            // 
-            this.marketdbDataSet.DataSetName = "marketdbDataSet";
-            this.marketdbDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // productsTableAdapter
-            // 
-            this.productsTableAdapter.ClearBeforeFill = true;
-            // 
-            // marketdbDataSet1
-            // 
-            this.marketdbDataSet1.DataSetName = "marketdbDataSet";
-            this.marketdbDataSet1.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // productsTableAdapter1
-            // 
-            this.productsTableAdapter1.ClearBeforeFill = true;
-            // 
-            // tableAdapterManager1
-            // 
-            this.tableAdapterManager1.BackupDataSetBeforeUpdate = false;
-            this.tableAdapterManager1.ProductsTableAdapter = this.productsTableAdapter;
-            this.tableAdapterManager1.UpdateOrder = ZGB.marketdbDataSetTableAdapters.TableAdapterManager.UpdateOrderOption.InsertUpdateDelete;
-            // 
-            // marketdbDataSet2
-            // 
-            this.marketdbDataSet2.DataSetName = "marketdbDataSet";
-            this.marketdbDataSet2.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
+
+            // grpViewDatabase
+            this.grpViewDatabase.Controls.Add(this.rdbViewAllDB);
+            this.grpViewDatabase.Controls.Add(this.rdbViewProductDB);
+            this.grpViewDatabase.Controls.Add(this.rdbViewMarketDB);
+            this.grpViewDatabase.Controls.Add(this.rdbViewDefaultDB);
+            this.grpViewDatabase.Location = new System.Drawing.Point(600, 70);
+            this.grpViewDatabase.Name = "grpViewDatabase";
+            this.grpViewDatabase.Size = new System.Drawing.Size(350, 100);
+            this.grpViewDatabase.TabIndex = 17;
+            this.grpViewDatabase.TabStop = false;
+            this.grpViewDatabase.Text = "View Database";
+
+            // rdbViewAllDB
+            this.rdbViewAllDB.AutoSize = true;
+            this.rdbViewAllDB.Location = new System.Drawing.Point(250, 40);
+            this.rdbViewAllDB.Name = "rdbViewAllDB";
+            this.rdbViewAllDB.Size = new System.Drawing.Size(70, 17);
+            this.rdbViewAllDB.TabIndex = 3;
+            this.rdbViewAllDB.Text = "All DBs";
+            this.rdbViewAllDB.UseVisualStyleBackColor = true;
+
+            // rdbViewProductDB
+            this.rdbViewProductDB.AutoSize = true;
+            this.rdbViewProductDB.Location = new System.Drawing.Point(150, 40);
+            this.rdbViewProductDB.Name = "rdbViewProductDB";
+            this.rdbViewProductDB.Size = new System.Drawing.Size(80, 17);
+            this.rdbViewProductDB.TabIndex = 2;
+            this.rdbViewProductDB.Text = "Product DB";
+            this.rdbViewProductDB.UseVisualStyleBackColor = true;
+
+            // rdbViewMarketDB
+            this.rdbViewMarketDB.AutoSize = true;
+            this.rdbViewMarketDB.Location = new System.Drawing.Point(50, 40);
+            this.rdbViewMarketDB.Name = "rdbViewMarketDB";
+            this.rdbViewMarketDB.Size = new System.Drawing.Size(75, 17);
+            this.rdbViewMarketDB.TabIndex = 1;
+            this.rdbViewMarketDB.Text = "Market DB";
+            this.rdbViewMarketDB.UseVisualStyleBackColor = true;
+
+            // rdbViewDefaultDB
+            this.rdbViewDefaultDB.AutoSize = true;
+            this.rdbViewDefaultDB.Checked = true;
+            this.rdbViewDefaultDB.Location = new System.Drawing.Point(50, 20);
+            this.rdbViewDefaultDB.Name = "rdbViewDefaultDB";
+            this.rdbViewDefaultDB.Size = new System.Drawing.Size(75, 17);
+            this.rdbViewDefaultDB.TabIndex = 0;
+            this.rdbViewDefaultDB.TabStop = true;
+            this.rdbViewDefaultDB.Text = "Default DB";
+            this.rdbViewDefaultDB.UseVisualStyleBackColor = true;
+
+            // grpOperationDatabase
+            this.grpOperationDatabase.Controls.Add(this.lblCurrentOperationDB);
+            this.grpOperationDatabase.Controls.Add(this.rdbOperationProductDB);
+            this.grpOperationDatabase.Controls.Add(this.rdbOperationMarketDB);
+            this.grpOperationDatabase.Controls.Add(this.rdbOperationDefaultDB);
+            this.grpOperationDatabase.Location = new System.Drawing.Point(600, 180);
+            this.grpOperationDatabase.Name = "grpOperationDatabase";
+            this.grpOperationDatabase.Size = new System.Drawing.Size(350, 100);
+            this.grpOperationDatabase.TabIndex = 18;
+            this.grpOperationDatabase.TabStop = false;
+            this.grpOperationDatabase.Text = "Operation Database";
+
+            // lblCurrentOperationDB
+            this.lblCurrentOperationDB.AutoSize = true;
+            this.lblCurrentOperationDB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblCurrentOperationDB.Location = new System.Drawing.Point(20, 70);
+            this.lblCurrentOperationDB.Name = "lblCurrentOperationDB";
+            this.lblCurrentOperationDB.Size = new System.Drawing.Size(150, 13);
+            this.lblCurrentOperationDB.TabIndex = 3;
+            this.lblCurrentOperationDB.Text = "Current Operation DB: neo4j";
+
+            // rdbOperationProductDB
+            this.rdbOperationProductDB.AutoSize = true;
+            this.rdbOperationProductDB.Location = new System.Drawing.Point(250, 40);
+            this.rdbOperationProductDB.Name = "rdbOperationProductDB";
+            this.rdbOperationProductDB.Size = new System.Drawing.Size(80, 17);
+            this.rdbOperationProductDB.TabIndex = 2;
+            this.rdbOperationProductDB.Text = "Product DB";
+            this.rdbOperationProductDB.UseVisualStyleBackColor = true;
+
+            // rdbOperationMarketDB
+            this.rdbOperationMarketDB.AutoSize = true;
+            this.rdbOperationMarketDB.Location = new System.Drawing.Point(150, 40);
+            this.rdbOperationMarketDB.Name = "rdbOperationMarketDB";
+            this.rdbOperationMarketDB.Size = new System.Drawing.Size(75, 17);
+            this.rdbOperationMarketDB.TabIndex = 1;
+            this.rdbOperationMarketDB.Text = "Market DB";
+            this.rdbOperationMarketDB.UseVisualStyleBackColor = true;
+
+            // rdbOperationDefaultDB
+            this.rdbOperationDefaultDB.AutoSize = true;
+            this.rdbOperationDefaultDB.Checked = true;
+            this.rdbOperationDefaultDB.Location = new System.Drawing.Point(50, 40);
+            this.rdbOperationDefaultDB.Name = "rdbOperationDefaultDB";
+            this.rdbOperationDefaultDB.Size = new System.Drawing.Size(75, 17);
+            this.rdbOperationDefaultDB.TabIndex = 0;
+            this.rdbOperationDefaultDB.TabStop = true;
+            this.rdbOperationDefaultDB.Text = "Default DB";
+            this.rdbOperationDefaultDB.UseVisualStyleBackColor = true;
+
             // Form1
-            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1000, 650);
+            this.Controls.Add(this.grpOperationDatabase);
+            this.Controls.Add(this.grpViewDatabase);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnUpdate);
@@ -312,16 +308,14 @@
             this.Controls.Add(this.lblID);
             this.Controls.Add(this.lblProduct);
             this.Name = "Form1";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Text = "Neo4j Product Management System";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.productsBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.marketdbDataSet)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.marketdbDataSet1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.marketdbDataSet2)).EndInit();
+            this.grpViewDatabase.ResumeLayout(false);
+            this.grpViewDatabase.PerformLayout();
+            this.grpOperationDatabase.ResumeLayout(false);
+            this.grpOperationDatabase.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion
@@ -343,19 +337,15 @@
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private marketdbDataSet marketdbDataSet;
-        private System.Windows.Forms.BindingSource productsBindingSource;
-        private marketdbDataSetTableAdapters.ProductsTableAdapter productsTableAdapter;
-        private System.Windows.Forms.DataGridViewTextBoxColumn productIDDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn productNameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn productCategoryDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn productCompanyDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn productPriceDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn productQuantityDataGridViewTextBoxColumn;
-        private marketdbDataSet marketdbDataSet1;
-        private marketdbDataSetTableAdapters.ProductsTableAdapter productsTableAdapter1;
-        private marketdbDataSetTableAdapters.TableAdapterManager tableAdapterManager1;
-        private marketdbDataSet marketdbDataSet2;
+        private System.Windows.Forms.GroupBox grpViewDatabase;
+        private System.Windows.Forms.RadioButton rdbViewAllDB;
+        private System.Windows.Forms.RadioButton rdbViewProductDB;
+        private System.Windows.Forms.RadioButton rdbViewMarketDB;
+        private System.Windows.Forms.RadioButton rdbViewDefaultDB;
+        private System.Windows.Forms.GroupBox grpOperationDatabase;
+        private System.Windows.Forms.Label lblCurrentOperationDB;
+        private System.Windows.Forms.RadioButton rdbOperationProductDB;
+        private System.Windows.Forms.RadioButton rdbOperationMarketDB;
+        private System.Windows.Forms.RadioButton rdbOperationDefaultDB;
     }
 }
-

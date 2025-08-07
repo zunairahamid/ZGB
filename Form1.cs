@@ -11,7 +11,8 @@ namespace ZGB
     {
         private readonly IDriver _driver;
         private DataTable _productsTable;
-        
+        private string _viewDatabase = "neo4j"; // For viewing data
+        private string _operationDatabase = "neo4j"; // For CRUD operations
 
         public Form1()
         {
@@ -22,8 +23,9 @@ namespace ZGB
                 "bolt://localhost:7687",
                 AuthTokens.Basic("neo4j", "yourpassword"));
 
-            // Set up DataTable and DataGridView
             InitializeDataTable();
+            InitializeDatabaseControls();
+            this.Load += async (sender, e) => await LoadProductsAsync();
         }
 
         private void InitializeDataTable()
@@ -35,15 +37,63 @@ namespace ZGB
             _productsTable.Columns.Add("ProductCompany", typeof(string));
             _productsTable.Columns.Add("ProductPrice", typeof(decimal));
             _productsTable.Columns.Add("ProductQuantity", typeof(int));
+            _productsTable.Columns.Add("Database", typeof(string));
 
             dataGridView1.DataSource = _productsTable;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
-        private async void Form1_Load(object sender, EventArgs e)
+        private void InitializeDatabaseControls()
         {
-            await LoadProductsAsync();
+            // Database selection for viewing
+            rdbViewMarketDB.Tag = "marketdb";
+            rdbViewProductDB.Tag = "productdb";
+            rdbViewDefaultDB.Tag = "neo4j";
+            rdbViewDefaultDB.Checked = true;
+
+            // Database selection for operations
+            rdbOperationMarketDB.Tag = "marketdb";
+            rdbOperationProductDB.Tag = "productdb";
+            rdbOperationDefaultDB.Tag = "neo4j";
+            rdbOperationDefaultDB.Checked = true;
+
+            // Wire up event handlers
+            rdbViewMarketDB.CheckedChanged += ViewDatabase_CheckedChanged;
+            rdbViewProductDB.CheckedChanged += ViewDatabase_CheckedChanged;
+            rdbViewDefaultDB.CheckedChanged += ViewDatabase_CheckedChanged;
+
+            rdbOperationMarketDB.CheckedChanged += OperationDatabase_CheckedChanged;
+            rdbOperationProductDB.CheckedChanged += OperationDatabase_CheckedChanged;
+            rdbOperationDefaultDB.CheckedChanged += OperationDatabase_CheckedChanged;
+
+            // Initialize buttons
+            btnInsert.Click += btnInsert_Click;
+            btnUpdate.Click += btnUpdate_Click;
+            btnDelete.Click += btnDelete_Click;
+
+            // Initialize data grid view
+            dataGridView1.SelectionChanged += dataGridView1_SelectionChanged;
+        }
+
+        private async void ViewDatabase_CheckedChanged(object sender, EventArgs e)
+        {
+            var radio = sender as RadioButton;
+            if (radio != null && radio.Checked)
+            {
+                _viewDatabase = radio.Tag.ToString();
+                await LoadProductsAsync();
+            }
+        }
+
+        private void OperationDatabase_CheckedChanged(object sender, EventArgs e)
+        {
+            var radio = sender as RadioButton;
+            if (radio != null && radio.Checked)
+            {
+                _operationDatabase = radio.Tag.ToString();
+                lblCurrentOperationDB.Text = $"Current Operation DB: {_operationDatabase}";
+            }
         }
 
         private async Task LoadProductsAsync()
@@ -53,7 +103,35 @@ namespace ZGB
                 Cursor = Cursors.WaitCursor;
                 _productsTable.Rows.Clear();
 
-                using (var session = _driver.AsyncSession())
+                // Load from all databases or filter by viewDatabase
+                if (_viewDatabase == "all")
+                {
+                    await LoadFromDatabase("marketdb");
+                    await LoadFromDatabase("productdb");
+                    await LoadFromDatabase("neo4j");
+                }
+                else
+                {
+                    await LoadFromDatabase(_viewDatabase);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading products: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+                dataGridView1.Refresh();
+            }
+        }
+
+        private async Task LoadFromDatabase(string databaseName)
+        {
+            try
+            {
+                using (var session = _driver.AsyncSession(builder => builder.WithDatabase(databaseName)))
                 {
                     var result = await session.ExecuteReadAsync(async tx =>
                     {
@@ -75,23 +153,57 @@ namespace ZGB
                             record["ProductCategory"].As<string>(),
                             record["ProductCompany"].As<string>(),
                             record["ProductPrice"].As<decimal>(),
-                            record["ProductQuantity"].As<int>());
+                            record["ProductQuantity"].As<int>(),
+                            databaseName);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading products: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                Cursor = Cursors.Default;
-                dataGridView1.Refresh();
+                if (ex.Message.Contains("does not exist"))
+                {
+                    await CreateDatabase(databaseName);
+                    await LoadFromDatabase(databaseName); // Try again after creation
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
 
-        private async void btnInsert_Click_1(object sender, EventArgs e)
+        private async Task CreateDatabase(string databaseName)
+        {
+            try
+            {
+                // Need to use system database to create new databases
+                using (var sysSession = _driver.AsyncSession(builder => builder.WithDatabase("system")))
+                {
+                    await sysSession.ExecuteWriteAsync(async tx =>
+                    {
+                        await tx.RunAsync($"CREATE DATABASE {databaseName}");
+                    });
+                }
+
+                // Create initial schema in the new database
+                using (var session = _driver.AsyncSession(builder => builder.WithDatabase(databaseName)))
+                {
+                    await session.ExecuteWriteAsync(async tx =>
+                    {
+                        await tx.RunAsync(
+                            "CREATE CONSTRAINT product_id_unique IF NOT EXISTS " +
+                            "FOR (p:Product) REQUIRE p.id IS UNIQUE");
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to create database {databaseName}: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void btnInsert_Click(object sender, EventArgs e)
         {
             if (!ValidateInputs()) return;
 
@@ -108,7 +220,7 @@ namespace ZGB
                     { "quantity", int.Parse(tbxQuantity.Text) }
                 };
 
-                using (var session = _driver.AsyncSession())
+                using (var session = _driver.AsyncSession(builder => builder.WithDatabase(_operationDatabase)))
                 {
                     var result = await session.ExecuteWriteAsync(async tx =>
                     {
@@ -123,8 +235,8 @@ namespace ZGB
 
                     if (result["id"].As<int>() > 0)
                     {
-                        MessageBox.Show("Product inserted successfully!", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show($"Product inserted successfully into {_operationDatabase}!",
+                            "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         await LoadProductsAsync();
                         ClearForm();
                     }
@@ -158,7 +270,7 @@ namespace ZGB
                     { "quantity", int.Parse(tbxQuantity.Text) }
                 };
 
-                using (var session = _driver.AsyncSession())
+                using (var session = _driver.AsyncSession(builder => builder.WithDatabase(_operationDatabase)))
                 {
                     var result = await session.ExecuteWriteAsync(async tx =>
                     {
@@ -179,8 +291,8 @@ namespace ZGB
                         return;
                     }
 
-                    MessageBox.Show("Product updated successfully!", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Product updated successfully in {_operationDatabase}!",
+                        "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await LoadProductsAsync();
                 }
             }
@@ -195,7 +307,7 @@ namespace ZGB
             }
         }
 
-        private async void btnDelete_Click_1(object sender, EventArgs e)
+        private async void btnDelete_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(tbxID.Text) || !int.TryParse(tbxID.Text, out _))
             {
@@ -204,7 +316,7 @@ namespace ZGB
                 return;
             }
 
-            if (MessageBox.Show("Are you sure you want to delete this product?",
+            if (MessageBox.Show($"Are you sure you want to delete this product from {_operationDatabase}?",
                 "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
                 return;
@@ -218,7 +330,7 @@ namespace ZGB
                     { "id", int.Parse(tbxID.Text) }
                 };
 
-                using (var session = _driver.AsyncSession())
+                using (var session = _driver.AsyncSession(builder => builder.WithDatabase(_operationDatabase)))
                 {
                     var result = await session.ExecuteWriteAsync(async tx =>
                     {
@@ -238,8 +350,8 @@ namespace ZGB
                         return;
                     }
 
-                    MessageBox.Show("Product deleted successfully!", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Product deleted successfully from {_operationDatabase}!",
+                        "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await LoadProductsAsync();
                     ClearForm();
                 }
@@ -298,7 +410,7 @@ namespace ZGB
             tbxQuantity.Clear();
         }
 
-        private void dataGridView_SelectionChanged(object sender, EventArgs e)
+        private void dataGridView1_SelectionChanged(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count > 0)
             {
@@ -309,6 +421,21 @@ namespace ZGB
                 tbxCompany.Text = row.Cells["ProductCompany"].Value.ToString();
                 tbxPrice.Text = row.Cells["ProductPrice"].Value.ToString();
                 tbxQuantity.Text = row.Cells["ProductQuantity"].Value.ToString();
+
+                // Set operation database to match the selected row's database
+                string db = row.Cells["Database"].Value.ToString();
+                switch (db)
+                {
+                    case "marketdb":
+                        rdbOperationMarketDB.Checked = true;
+                        break;
+                    case "productdb":
+                        rdbOperationProductDB.Checked = true;
+                        break;
+                    default:
+                        rdbOperationDefaultDB.Checked = true;
+                        break;
+                }
             }
         }
 
@@ -316,11 +443,6 @@ namespace ZGB
         {
             base.OnFormClosing(e);
             _driver?.Dispose();
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
     }
 }
