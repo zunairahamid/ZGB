@@ -47,6 +47,7 @@ namespace ZGB
         private void InitializeDatabaseControls()
         {
             // Database selection for viewing
+            rdbViewAllDB.Tag = "all";
             rdbViewMarketDB.Tag = "marketdb";
             rdbViewProductDB.Tag = "productdb";
             rdbViewDefaultDB.Tag = "neo4j";
@@ -59,6 +60,7 @@ namespace ZGB
             rdbOperationDefaultDB.Checked = true;
 
             // Wire up event handlers
+            rdbViewAllDB.CheckedChanged += ViewDatabase_CheckedChanged;
             rdbViewMarketDB.CheckedChanged += ViewDatabase_CheckedChanged;
             rdbViewProductDB.CheckedChanged += ViewDatabase_CheckedChanged;
             rdbViewDefaultDB.CheckedChanged += ViewDatabase_CheckedChanged;
@@ -103,15 +105,16 @@ namespace ZGB
                 Cursor = Cursors.WaitCursor;
                 _productsTable.Rows.Clear();
 
-                // Load from all databases or filter by viewDatabase
                 if (_viewDatabase == "all")
                 {
+                    // Load from all databases
                     await LoadFromDatabase("marketdb");
                     await LoadFromDatabase("productdb");
                     await LoadFromDatabase("neo4j");
                 }
                 else
                 {
+                    // Load from specific database
                     await LoadFromDatabase(_viewDatabase);
                 }
             }
@@ -167,7 +170,8 @@ namespace ZGB
                 }
                 else
                 {
-                    throw;
+                    MessageBox.Show($"Error loading from {databaseName}: {ex.Message}",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -176,7 +180,6 @@ namespace ZGB
         {
             try
             {
-                // Need to use system database to create new databases
                 using (var sysSession = _driver.AsyncSession(builder => builder.WithDatabase("system")))
                 {
                     await sysSession.ExecuteWriteAsync(async tx =>
@@ -185,7 +188,6 @@ namespace ZGB
                     });
                 }
 
-                // Create initial schema in the new database
                 using (var session = _driver.AsyncSession(builder => builder.WithDatabase(databaseName)))
                 {
                     await session.ExecuteWriteAsync(async tx =>
